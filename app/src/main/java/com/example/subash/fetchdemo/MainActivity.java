@@ -1,11 +1,16 @@
 package com.example.subash.fetchdemo;
 
 import android.app.ProgressDialog;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.tonyodev.fetch.Fetch;
+
+import java.util.List;
 
 import io.realm.Realm;
 
@@ -14,11 +19,12 @@ public class MainActivity extends AppCompatActivity {
     private MainActivityPresenter presenter;
 
     private ProgressDialog progressDialog;
-
+    private LinearLayout linearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        linearLayout = findViewById(R.id.linearLayout);
         setupRealm();
         setupFetch();
         setupPresenter();
@@ -36,6 +42,14 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setMessage(message);
         progressDialog.show();
+    }
+
+    public void setImages(List<String> images) {
+        for (String image: images) {
+            ImageView imageView = new ImageView(this);
+            imageView.setImageBitmap(BitmapFactory.decodeFile(image));
+            linearLayout.addView(imageView);
+        }
     }
 
     public void hideProgressDialog() {
