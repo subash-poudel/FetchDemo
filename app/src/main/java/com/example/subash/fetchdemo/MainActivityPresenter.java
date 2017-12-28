@@ -107,6 +107,7 @@ public class MainActivityPresenter {
             imageDownloadRequest.add(imageDownload);
         }
         ImageDownloadManager imageDownloadManager = new ImageDownloadManager(imageDownloadRequest);
+        imageDownloadManager.setFetchListener(activity);
         imageDownloadManager.setListener(new ImageDownloadManager.ImagesDownloadListener() {
             @Override
             public void onImagesDownloadComplete() {

@@ -26,9 +26,17 @@ public class ImageDownloadManager {
     int downloadedImageCount = 0;
     String fileDirectory;
 
+    private FetchListener fetchListener;
+
+    public void setFetchListener(FetchListener fetchListener) {
+        this.fetchListener = fetchListener;
+    }
+
     public void setListener(ImagesDownloadListener listener) {
         this.listener = listener;
     }
+
+
 
     public void startDownload(final Context context) {
         Fetch fetch = Fetch.newInstance(context);
@@ -48,48 +56,49 @@ public class ImageDownloadManager {
             }
 
         }
+        fetch.addFetchListener(fetchListener);
 
-        fetch.addFetchListener(new FetchListener() {
-            @Override
-            public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
-                if (status == Fetch.STATUS_DONE) {
-                    downloadedImageCount += 1;
-                    Log.e("status done", id + "");
-                    // save the data in appropriate realm model
-                    final ImageDownload imageDownload = getImageDownloadWithID(id);
-                    switch (imageDownload.getType()) {
-                        case "person_profile_picture": {
-                            final Person person = (Person) imageDownload.getData();
-                            Realm realm = Realm.getDefaultInstance();
-                            realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    person.setFilePath(fileDirectory + imageDownload.getFilePath());
-                                }
-                            });
-                        }
-                        break;
-                        case "employee_profile_picture": {
-                            final Employee employee = (Employee) imageDownload.getData();
-                            Realm realm = Realm.getDefaultInstance();
-                            realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    employee.setFilePath(fileDirectory + imageDownload.getFilePath());
-                                }
-                            });
-                        }
-                        break;
-                    }
-                }
-                // check if all images has been downloaded
-                if (downloadedImageCount == imageDownloads.size()) {
-                    if (listener != null) {
-                        listener.onImagesDownloadComplete();
-                    }
-                }
-            }
-        });
+//        fetch.addFetchListener(new FetchListener() {
+//            @Override
+//            public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
+//                if (status == Fetch.STATUS_DONE) {
+//                    downloadedImageCount += 1;
+//                    Log.e("status done", id + "");
+//                    // save the data in appropriate realm model
+//                    final ImageDownload imageDownload = getImageDownloadWithID(id);
+//                    switch (imageDownload.getType()) {
+//                        case "person_profile_picture": {
+//                            final Person person = (Person) imageDownload.getData();
+//                            Realm realm = Realm.getDefaultInstance();
+//                            realm.executeTransaction(new Realm.Transaction() {
+//                                @Override
+//                                public void execute(Realm realm) {
+//                                    person.setFilePath(fileDirectory + imageDownload.getFilePath());
+//                                }
+//                            });
+//                        }
+//                        break;
+//                        case "employee_profile_picture": {
+//                            final Employee employee = (Employee) imageDownload.getData();
+//                            Realm realm = Realm.getDefaultInstance();
+//                            realm.executeTransaction(new Realm.Transaction() {
+//                                @Override
+//                                public void execute(Realm realm) {
+//                                    employee.setFilePath(fileDirectory + imageDownload.getFilePath());
+//                                }
+//                            });
+//                        }
+//                        break;
+//                    }
+//                }
+//                // check if all images has been downloaded
+//                if (downloadedImageCount == imageDownloads.size()) {
+//                    if (listener != null) {
+//                        listener.onImagesDownloadComplete();
+//                    }
+//                }
+//            }
+//        });
     }
 
     private ImageDownload getImageDownloadWithID(long id) {
